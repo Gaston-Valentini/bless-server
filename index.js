@@ -13,26 +13,13 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 app.get("/reviews", async (req, res) => {
-    fetch(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${process.env.PLACE_NAME}&inputtype=textquery&fields=place_id&key=${process.env.GOOGLE_API_KEY}`)
+    fetch(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${process.env.PLACE_ID}&fields=reviews&key=${process.env.GOOGLE_API_KEY}`)
         .then((response) => response.json())
         .then((data) => {
-            const placeId = data.candidates[0].place_id;
-
-            fetch(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=reviews&key=${process.env.GOOGLE_API_KEY}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    return res.status(200).json({
-                        success: true,
-                        data: data.result.reviews,
-                    });
-                })
-                .catch((error) => {
-                    console.log(error);
-                    return res.status(500).json({
-                        success: false,
-                        message: "Internal server error",
-                    });
-                });
+            return res.status(200).json({
+                success: true,
+                data: data.result.reviews,
+            });
         })
         .catch((error) => {
             console.log(error);
